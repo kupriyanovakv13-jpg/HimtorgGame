@@ -1,0 +1,2990 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Новогодние игры</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c1b33 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #FF6B6B, #4ECDC4, #45B7D1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #a8d8ea;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        /* Управление музыкой */
+        .music-controls {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .music-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .music-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .music-btn.active {
+            background: rgba(78, 205, 196, 0.3);
+            border-color: #4ECDC4;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(78, 205, 196, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(78, 205, 196, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(78, 205, 196, 0); }
+        }
+
+        /* Стили для выбора игры */
+        .game-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .game-option {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .game-option:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .game-option.active {
+            border-color: #4ECDC4;
+            background: rgba(78, 205, 196, 0.1);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .game-option h3 {
+            color: #FF6B6B;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .game-option p {
+            color: #a8d8ea;
+            font-size: 0.8rem;
+        }
+
+        /* Общие стили для игровых областей */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            text-align: center;
+            flex: 1;
+            min-width: 100px;
+            margin: 5px 0;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4ECDC4;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #a8d8ea;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Стили для игрового поля 1 (Дед Мороз) */
+        .game-board {
+            position: relative;
+            height: 350px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+            touch-action: none;
+        }
+
+        #santa {
+            position: absolute;
+            width: 60px;
+            height: 75px;
+            transition: left 0.15s, top 0.15s;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .gift {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Стили для игрового поля 2 (Снежки) */
+        #monster {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            z-index: 10;
+            pointer-events: none;
+            transition: left 0.2s, top 0.2s;
+        }
+
+        .snowball {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, white, #a8d8ea);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            z-index: 8;
+            pointer-events: none;
+        }
+
+        .hit-effect {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.8), transparent);
+            z-index: 9;
+            pointer-events: none;
+        }
+
+        /* Шкала здоровья монстра */
+        .health-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(to right, #FF6B6B, #4ECDC4);
+            width: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .health-text {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #FF6B6B;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        /* Стили для игрового поля 3 (Наряди ёлочку) */
+        .tree-game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tree-container {
+            display: flex;
+            gap: 20px;
+            height: 350px;
+        }
+
+        .tree-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tree-side h3 {
+            text-align: center;
+            color: #4ECDC4;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .tree {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            position: relative;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tree-image {
+            width: 80%;
+            height: 80%;
+            position: relative;
+        }
+
+        .tree-spot {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .tree-spot.filled {
+            border-style: solid;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .ornaments-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ornaments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .ornament {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            cursor: grab;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .ornament.dragging {
+            opacity: 0.7;
+            transform: scale(1.1);
+            cursor: grabbing;
+        }
+
+        .ornament.placed {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        /* Стили для игрового поля 4 (Карточки) */
+        .cards-game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            height: 350px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card {
+            background: linear-gradient(135deg, #4ECDC4, #6AE3D9);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card .front,
+        .card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+        }
+
+        .card .front {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            transform: rotateY(180deg);
+        }
+
+        .card .back {
+            background: linear-gradient(135deg, #4ECDC4, #6AE3D9);
+        }
+
+        .card.matched {
+            cursor: default;
+            opacity: 0.7;
+            transform: scale(0.95);
+        }
+
+        .card.matched .front {
+            background: linear-gradient(135deg, #06D6A0, #4ECDC4);
+        }
+
+        /* Общие элементы управления */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .control-btn:active {
+            transform: translateY(1px);
+        }
+
+        .control-btn.blue {
+            background: linear-gradient(135deg, #4ECDC4, #6AE3D9);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .control-btn.blue:hover {
+            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.6);
+        }
+
+        /* Сенсорные кнопки управления */
+        .touch-controls {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            height: 180px;
+        }
+
+        .touch-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .touch-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
+
+        .touch-btn.up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .touch-btn.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .touch-btn.center {
+            grid-column: 2;
+            grid-row: 2;
+            font-size: 1.5rem;
+            background: rgba(255, 107, 107, 0.3);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+
+        .touch-btn.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .touch-btn.down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        /* Для игры 2 (снежки) - сенсорные кнопки */
+        .snowball-controls {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .snowball-btn {
+            background: linear-gradient(135deg, #4ECDC4, #6AE3D9);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .snowball-btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(135deg, #3db8af, #5ad3c9);
+        }
+
+        .snowball-btn.fire {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+        }
+
+        .snowball-btn.fire:active {
+            background: linear-gradient(135deg, #e05a5a, #e57c7c);
+        }
+
+        /* Общие стили для инструкций и сообщений */
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border-left: 4px solid #FF6B6B;
+        }
+
+        .instructions h3 {
+            color: #4ECDC4;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+
+        .instructions ul {
+            padding-left: 18px;
+            color: #d1e8ff;
+        }
+
+        .instructions li {
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            line-height: 1.3;
+        }
+
+        .game-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 100;
+            width: 90%;
+            max-width: 350px;
+            display: none;
+            border: 2px solid #4ECDC4;
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.5);
+        }
+
+        .message-title {
+            font-size: 1.8rem;
+            color: #FF6B6B;
+            margin-bottom: 12px;
+        }
+
+        .message-text {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #a8d8ea;
+            line-height: 1.4;
+        }
+
+        .message-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .message-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Снежинки */
+        .snowflakes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .snowflake {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        /* Анимации */
+        .gift-collected {
+            animation: giftCollect 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes giftCollect {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        .santa-move {
+            animation: santaMove 0.3s ease-in-out;
+        }
+
+        @keyframes santaMove {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .monster-hit {
+            animation: monsterHit 0.3s ease-in-out;
+        }
+
+        @keyframes monsterHit {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .snowball-throw {
+            animation: snowballThrow 0.5s linear forwards;
+        }
+
+        @keyframes snowballThrow {
+            0% { transform: scale(0.5); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .monster-dead {
+            animation: monsterDead 1s ease-out forwards;
+        }
+
+        @keyframes monsterDead {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 0.7; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        .correct-placement {
+            animation: correctPlacement 0.5s ease-in-out;
+        }
+
+        @keyframes correctPlacement {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .wrong-placement {
+            animation: wrongPlacement 0.5s ease-in-out;
+        }
+
+        @keyframes wrongPlacement {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .card-match {
+            animation: cardMatch 0.6s ease-in-out;
+        }
+
+        @keyframes cardMatch {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Анимация падения снежинок */
+        @keyframes fall {
+            0% { transform: translateY(-10px) rotate(0deg); }
+            100% { transform: translateY(350px) rotate(360deg); }
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .game-board {
+                height: 300px;
+            }
+            
+            #santa, #monster {
+                width: 50px;
+                height: 65px;
+            }
+            
+            .gift {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .touch-controls, .snowball-controls {
+                display: grid;
+            }
+            
+            .snowball-controls {
+                display: flex;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.7rem;
+            }
+            
+            .control-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .game-option {
+                min-width: 140px;
+                padding: 12px;
+            }
+            
+            .game-icon {
+                font-size: 2rem;
+            }
+            
+            .music-controls {
+                position: static;
+                margin-top: 10px;
+                display: flex;
+                justify-content: center;
+            }
+            
+            .tree-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .tree-side {
+                min-height: 300px;
+            }
+            
+            .cards-container {
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                height: 400px;
+                gap: 8px;
+                padding: 10px;
+            }
+            
+            .card {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .game-board {
+                height: 250px;
+            }
+            
+            .stat-box {
+                min-width: 80px;
+            }
+            
+            .touch-controls {
+                height: 150px;
+            }
+            
+            .touch-btn {
+                font-size: 1.5rem;
+            }
+            
+            .game-selector {
+                flex-direction: column;
+            }
+            
+            .health-text {
+                font-size: 1rem;
+            }
+            
+            .cards-container {
+                height: 350px;
+                gap: 5px;
+                padding: 8px;
+            }
+            
+            .card {
+                font-size: 1.2rem;
+            }
+            
+            .ornament {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Скрытие элементов игры */
+        .game-section {
+            display: none;
+        }
+        
+        .game-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-snowflake"></i> Новогодние игры</h1>
+            <p class="subtitle">Выберите игру и весело проведите время!</p>
+            
+            <div class="music-controls">
+                <button class="music-btn" id="musicToggle">
+                    <i class="fas fa-music"></i>
+                </button>
+                <div id="musicStatus" style="font-size: 0.8rem; color: #a8d8ea;">Музыка выключена</div>
+            </div>
+        </header>
+        
+        <!-- Выбор игры -->
+        <div class="game-selector">
+            <div class="game-option active" data-game="1">
+                <i class="fas fa-user game-icon" style="color: #FF6B6B;"></i>
+                <h3>Дед Мороз и подарки</h3>
+                <p>Соберите все подарки за 15 секунд!</p>
+            </div>
+            <div class="game-option" data-game="2">
+                <i class="fas fa-snowflake game-icon" style="color: #4ECDC4;"></i>
+                <h3>Снежный обстрел</h3>
+                <p>Уничтожьте монстра за 15 секунд!</p>
+            </div>
+            <div class="game-option" data-game="3">
+                <i class="fas fa-tree game-icon" style="color: #06D6A0;"></i>
+                <h3>Наряди ёлочку</h3>
+                <p>Расставьте шарики как на образце!</p>
+            </div>
+            <div class="game-option" data-game="4">
+                <i class="fas fa-cards game-icon" style="color: #FFD166;"></i>
+                <h3>Новогодние пары</h3>
+                <p>Найдите все пары карточек!</p>
+            </div>
+        </div>
+        
+        <!-- Игра 1: Дед Мороз и подарки -->
+        <div id="game1" class="game-section active">
+            <div class="game-area">
+                <div class="stats">
+                    <div class="stat-box">
+                        <span id="score" class="stat-value">0</span>
+                        <span class="stat-label">Собрано подарков</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="time1" class="stat-value">15</span>
+                        <span class="stat-label">Осталось секунд</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="gifts-left" class="stat-value">10</span>
+                        <span class="stat-label">Подарков осталось</span>
+                    </div>
+                </div>
+                
+                <div class="game-board" id="gameBoard1">
+                    <!-- Дед Мороз -->
+                    <div id="santa">
+                        <i class="fas fa-user" style="font-size: 50px; color: #FF6B6B;"></i>
+                    </div>
+                    
+                    <!-- Снежинки -->
+                    <div class="snowflakes" id="snowflakes1"></div>
+                    
+                    <!-- Сообщение о конце игры -->
+                    <div class="game-message" id="gameMessage1">
+                        <h2 class="message-title" id="messageTitle1">Поздравляем!</h2>
+                        <p class="message-text" id="messageText1">Вы собрали все подарки!</p>
+                        <button class="message-btn" id="restartBtn1">Играть снова</button>
+                    </div>
+                </div>
+                
+                <!-- Сенсорное управление для телефонов -->
+                <div class="touch-controls" id="touchControls1">
+                    <div class="touch-btn up" data-direction="up">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="touch-btn left" data-direction="left">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <div class="touch-btn center" id="touchCenter1">
+                        <i class="fas fa-hand-pointer"></i><br>
+                        <span style="font-size: 0.7rem;">Коснитесь для сбора</span>
+                    </div>
+                    <div class="touch-btn right" data-direction="right">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="touch-btn down" data-direction="down">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" id="startBtn1">
+                        <i class="fas fa-play"></i> Начать игру
+                    </button>
+                    <button class="control-btn blue" id="instructionsBtn1">
+                        <i class="fas fa-info-circle"></i> Как играть
+                    </button>
+                </div>
+                
+                <div class="instructions" id="instructions1">
+                    <h3><i class="fas fa-gamepad"></i> Правила игры</h3>
+                    <ul>
+                        <li><strong>На компьютере:</strong> Используйте стрелки клавиатуры для движения</li>
+                        <li><strong>На телефоне:</strong> Используйте кнопки управления ниже или касайтесь экрана, чтобы вести Деда Мороза</li>
+                        <li>Собирайте подарки, наезжая на них Дедом Морозом</li>
+                        <li>У вас есть 15 секунд, чтобы собрать все 10 подарков</li>
+                        <li>Каждый собранный подарок приносит 10 очков</li>
+                        <li>Если соберете все подарки до окончания времени - вы выиграли!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Игра 2: Снежный обстрел -->
+        <div id="game2" class="game-section">
+            <div class="game-area">
+                <div class="stats">
+                    <div class="stat-box">
+                        <span id="hits" class="stat-value">0</span>
+                        <span class="stat-label">Нанесено урона</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="time2" class="stat-value">15</span>
+                        <span class="stat-label">Осталось секунд</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="monster-health" class="stat-value">100</span>
+                        <span class="stat-label">Здоровье монстра</span>
+                    </div>
+                </div>
+                
+                <!-- Шкала здоровья монстра -->
+                <div class="health-text" id="healthText">Здоровье монстра: <span id="healthValue">100</span>/100</div>
+                <div class="health-bar">
+                    <div class="health-fill" id="healthFill"></div>
+                </div>
+                
+                <div class="game-board" id="gameBoard2">
+                    <!-- Монстр -->
+                    <div id="monster">
+                        <i class="fas fa-ghost" style="font-size: 70px; color: #FF6B6B;"></i>
+                    </div>
+                    
+                    <!-- Снежинки -->
+                    <div class="snowflakes" id="snowflakes2"></div>
+                    
+                    <!-- Сообщение о конце игры -->
+                    <div class="game-message" id="gameMessage2">
+                        <h2 class="message-title" id="messageTitle2">Результат!</h2>
+                        <p class="message-text" id="messageText2">Вы нанесли 0 урона монстру</p>
+                        <button class="message-btn" id="restartBtn2">Играть снова</button>
+                    </div>
+                </div>
+                
+                <!-- Сенсорное управление для телефонов (снежки) -->
+                <div class="snowball-controls" id="snowballControls">
+                    <button class="snowball-btn fire" id="fireBtn">
+                        <i class="fas fa-bullseye"></i> Выстрелить снежком
+                    </button>
+                    <button class="snowball-btn" id="autoFireBtn">
+                        <i class="fas fa-bolt"></i> Авто-стрельба
+                    </button>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" id="startBtn2">
+                        <i class="fas fa-play"></i> Начать игру
+                    </button>
+                    <button class="control-btn blue" id="instructionsBtn2">
+                        <i class="fas fa-info-circle"></i> Как играть
+                    </button>
+                </div>
+                
+                <div class="instructions" id="instructions2">
+                    <h3><i class="fas fa-gamepad"></i> Правила игры</h3>
+                    <ul>
+                        <li><strong>На компьютере:</strong> Кликайте по монстру мышкой, чтобы бросить снежок</li>
+                        <li><strong>На телефоне:</strong> Нажимайте кнопку "Выстрелить снежком" или коснитесь монстра</li>
+                        <li>Монстр имеет 100 единиц здоровья и постоянно двигается</li>
+                        <li>У вас есть 15 секунд, чтобы уничтожить монстра</li>
+                        <li>Каждый снежок наносит случайный урон от 5 до 15 единиц</li>
+                        <li>Уничтожьте монстра до окончания времени, чтобы победить!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Игра 3: Наряди ёлочку -->
+        <div id="game3" class="game-section">
+            <div class="tree-game-area">
+                <div class="stats">
+                    <div class="stat-box">
+                        <span id="correct-ornaments" class="stat-value">0</span>
+                        <span class="stat-label">Правильно размещено</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="total-ornaments" class="stat-value">8</span>
+                        <span class="stat-label">Всего шариков</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="time3" class="stat-value">120</span>
+                        <span class="stat-label">Осталось секунд</span>
+                    </div>
+                </div>
+                
+                <div class="tree-container">
+                    <div class="tree-side">
+                        <h3>Образец</h3>
+                        <div class="tree" id="sampleTree">
+                            <div class="tree-image" id="sampleTreeImage">
+                                <!-- Места для шариков будут добавлены через JS -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tree-side">
+                        <h3>Ваша ёлочка</h3>
+                        <div class="tree" id="playerTree">
+                            <div class="tree-image" id="playerTreeImage">
+                                <!-- Места для шариков будут добавлены через JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ornaments-container">
+                    <h3 style="text-align: center; color: #FF6B6B; margin-bottom: 10px;">Шарики для украшения</h3>
+                    <div class="ornaments" id="ornamentsContainer">
+                        <!-- Шарики будут добавлены через JS -->
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" id="startBtn3">
+                        <i class="fas fa-play"></i> Начать игру
+                    </button>
+                    <button class="control-btn blue" id="instructionsBtn3">
+                        <i class="fas fa-info-circle"></i> Как играть
+                    </button>
+                </div>
+                
+                <div class="instructions" id="instructions3">
+                    <h3><i class="fas fa-gamepad"></i> Правила игры</h3>
+                    <ul>
+                        <li><strong>Цель игры:</strong> Украсьте ёлочку точно так же, как на образце</li>
+                        <li><strong>Перетаскивание:</strong> Перетащите шарики из нижней панели на вашу ёлочку</li>
+                        <li><strong>Размещение:</strong> Каждый шарик должен быть на том же месте, что и на образце</li>
+                        <li><strong>Время:</strong> У вас есть 2 минуты, чтобы правильно украсить ёлочку</li>
+                        <li><strong>Подсказка:</strong> Цвет шарика и его положение должны совпадать с образцом</li>
+                        <li>При каждом новом запуске игры расположение шариков меняется!</li>
+                    </ul>
+                </div>
+                
+                <!-- Сообщение о конце игры -->
+                <div class="game-message" id="gameMessage3">
+                    <h2 class="message-title" id="messageTitle3">Поздравляем!</h2>
+                    <p class="message-text" id="messageText3">Вы правильно украсили ёлочку!</p>
+                    <button class="message-btn" id="restartBtn3">Играть снова</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Игра 4: Новогодние пары -->
+        <div id="game4" class="game-section">
+            <div class="cards-game-area">
+                <div class="stats">
+                    <div class="stat-box">
+                        <span id="matches" class="stat-value">0</span>
+                        <span class="stat-label">Найдено пар</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="attempts" class="stat-value">7</span>
+                        <span class="stat-label">Осталось попыток</span>
+                    </div>
+                    <div class="stat-box">
+                        <span id="moves" class="stat-value">0</span>
+                        <span class="stat-label">Ходов сделано</span>
+                    </div>
+                </div>
+                
+                <div class="cards-container" id="cardsContainer">
+                    <!-- Карточки будут добавлены через JS -->
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" id="startBtn4">
+                        <i class="fas fa-play"></i> Начать игру
+                    </button>
+                    <button class="control-btn blue" id="instructionsBtn4">
+                        <i class="fas fa-info-circle"></i> Как играть
+                    </button>
+                </div>
+                
+                <div class="instructions" id="instructions4">
+                    <h3><i class="fas fa-gamepad"></i> Правила игры</h3>
+                    <ul>
+                        <li><strong>Цель игры:</strong> Найдите все пары одинаковых новогодних карточек</li>
+                        <li><strong>Игровой процесс:</strong> Нажимайте на карточки, чтобы перевернуть их</li>
+                        <li><strong>Находка пары:</strong> Если две карточки совпадают, они остаются открытыми</li>
+                        <li><strong>Ошибка:</strong> Если карточки не совпадают, они переворачиваются обратно</li>
+                        <li><strong>Попытки:</strong> У вас есть всего 7 попыток на ошибки</li>
+                        <li><strong>Победа:</strong> Найдите все 8 пар до того, как закончатся попытки!</li>
+                    </ul>
+                </div>
+                
+                <!-- Сообщение о конце игры -->
+                <div class="game-message" id="gameMessage4">
+                    <h2 class="message-title" id="messageTitle4">Поздравляем!</h2>
+                    <p class="message-text" id="messageText4">Вы нашли все пары!</p>
+                    <button class="message-btn" id="restartBtn4">Играть снова</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let currentGame = 1;
+        let isMobile = false;
+        let musicPlaying = false;
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let musicInterval = null;
+        
+        // Ноты для новогодней мелодии (Jingle Bells)
+        const melodyNotes = [
+            { note: 'E4', duration: 0.5 }, // Jin-
+            { note: 'E4', duration: 0.5 }, // -gle
+            { note: 'E4', duration: 1 },   // bells,
+            { note: 'E4', duration: 0.5 }, // Jin-
+            { note: 'E4', duration: 0.5 }, // -gle
+            { note: 'E4', duration: 1 },   // bells,
+            { note: 'E4', duration: 0.5 }, // Jin-
+            { note: 'G4', duration: 0.5 }, // -gle
+            { note: 'C4', duration: 0.5 }, // all
+            { note: 'D4', duration: 0.5 }, // the
+            { note: 'E4', duration: 2 },   // way!
+            
+            { note: 'F4', duration: 0.5 }, // Oh
+            { note: 'F4', duration: 0.5 }, // what
+            { note: 'F4', duration: 0.75 },// fun
+            { note: 'F4', duration: 0.25 },// it
+            { note: 'F4', duration: 0.5 }, // is
+            { note: 'E4', duration: 0.5 }, // to
+            { note: 'E4', duration: 0.5 }, // ride
+            { note: 'E4', duration: 0.5 }, // in
+            { note: 'E4', duration: 0.5 }, // a
+            { note: 'E4', duration: 0.5 }, // one
+            { note: 'D4', duration: 0.5 }, // horse
+            { note: 'D4', duration: 0.5 }, // o-
+            { note: 'E4', duration: 0.5 }, // -pen
+            { note: 'D4', duration: 1 },   // sleigh!
+            { note: 'G4', duration: 1 },   // Hey!
+        ];
+        
+        // Частоты нот
+        const noteFrequencies = {
+            'C4': 261.63,
+            'D4': 293.66,
+            'E4': 329.63,
+            'F4': 349.23,
+            'G4': 392.00,
+            'A4': 440.00,
+            'B4': 493.88,
+            'C5': 523.25,
+            'D5': 587.33,
+            'E5': 659.25,
+            'F5': 698.46,
+            'G5': 783.99
+        };
+        
+        // Новогодние символы для карточек
+        const cardSymbols = ['🎁', '🎄', '⭐', '🦌', '🔔', '❄️', '🎅', '🤶', '🧦', '🍪', '🥛', '🎉', '🕯️', '⛄', '🎶', '✨'];
+        
+        // Цвета для шариков ёлки
+        const ornamentColors = [
+            { color: '#FF6B6B', symbol: '🔴' },
+            { color: '#4ECDC4', symbol: '🔵' },
+            { color: '#FFD166', symbol: '🟡' },
+            { color: '#06D6A0', symbol: '🟢' },
+            { color: '#118AB2', symbol: '🔷' },
+            { color: '#EF476F', symbol: '💖' },
+            { color: '#7209B7', symbol: '🟣' },
+            { color: '#F8961E', symbol: '🟠' }
+        ];
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            checkMobile();
+            setupGameSelector();
+            initGame1();
+            initGame2();
+            initGame3();
+            initGame4();
+            createSnowflakes('snowflakes1');
+            createSnowflakes('snowflakes2');
+            setupMusicControls();
+            
+            // Показываем первую игру по умолчанию
+            switchGame(1);
+        });
+        
+        // Определяем мобильное устройство
+        function checkMobile() {
+            isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // Настройка управления музыкой
+        function setupMusicControls() {
+            const musicToggle = document.getElementById('musicToggle');
+            const musicStatus = document.getElementById('musicStatus');
+            
+            // Инициализация аудио контекста при первом взаимодействии
+            function initAudio() {
+                try {
+                    // Создаем аудио контекст
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                    
+                    // Создаем узел громкости
+                    gainNode = audioContext.createGain();
+                    gainNode.connect(audioContext.destination);
+                    gainNode.gain.value = 0.3; // Устанавливаем громкость на 30%
+                    
+                    return true;
+                } catch (e) {
+                    console.error("Ошибка инициализации аудио:", e);
+                    musicStatus.textContent = "Аудио не поддерживается";
+                    return false;
+                }
+            }
+            
+            // Воспроизведение ноты
+            function playNote(frequency, duration) {
+                if (!audioContext || !gainNode) return;
+                
+                // Создаем осциллятор
+                oscillator = audioContext.createOscillator();
+                oscillator.connect(gainNode);
+                
+                // Устанавливаем тип волны (пилообразная волна для более "музыкального" звука)
+                oscillator.type = 'triangle';
+                
+                // Устанавливаем частоту
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                
+                // Начинаем воспроизведение
+                oscillator.start();
+                
+                // Останавливаем через указанное время
+                oscillator.stop(audioContext.currentTime + duration);
+            }
+            
+            // Воспроизведение мелодии
+            function playMelody() {
+                if (!audioContext || !gainNode) return;
+                
+                let time = audioContext.currentTime;
+                
+                // Проигрываем каждую ноту мелодии
+                melodyNotes.forEach((noteObj, index) => {
+                    const frequency = noteFrequencies[noteObj.note];
+                    if (frequency) {
+                        // Добавляем небольшую задержку между нотами
+                        setTimeout(() => {
+                            if (musicPlaying) {
+                                playNote(frequency, noteObj.duration);
+                            }
+                        }, index * 600); // 600ms между нотами
+                    }
+                });
+            }
+            
+            // Обработчик клика по кнопке музыки
+            musicToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (musicPlaying) {
+                    // Выключаем музыку
+                    stopMusic();
+                    musicPlaying = false;
+                    musicToggle.innerHTML = '<i class="fas fa-music"></i>';
+                    musicToggle.classList.remove('active');
+                    musicStatus.textContent = 'Музыка выключена';
+                } else {
+                    // Включаем музыку
+                    if (!audioContext) {
+                        if (!initAudio()) {
+                            alert("Ваш браузер не поддерживает аудио. Попробуйте использовать другой браузер.");
+                            return;
+                        }
+                    }
+                    
+                    // Возобновляем аудио контекст если он приостановлен
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    
+                    musicPlaying = true;
+                    musicToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    musicToggle.classList.add('active');
+                    musicStatus.textContent = 'Играет: Jingle Bells';
+                    
+                    // Начинаем воспроизведение мелодии
+                    playMelody();
+                    
+                    // Устанавливаем интервал для повторения мелодии
+                    musicInterval = setInterval(() => {
+                        if (musicPlaying) {
+                            playMelody();
+                        }
+                    }, melodyNotes.length * 600); // Повторяем каждые N секунд
+                }
+            });
+            
+            // Функция остановки музыки
+            function stopMusic() {
+                if (oscillator) {
+                    try {
+                        oscillator.stop();
+                    } catch (e) {
+                        // Игнорируем ошибки при остановке
+                    }
+                }
+                
+                if (musicInterval) {
+                    clearInterval(musicInterval);
+                    musicInterval = null;
+                }
+            }
+            
+            // Также разрешаем управление музыкой при клике на любую кнопку игры
+            const gameButtons = document.querySelectorAll('.control-btn, .game-option, .touch-btn, .snowball-btn, .message-btn');
+            gameButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Если аудио контекст еще не инициализирован, инициализируем его
+                    if (!audioContext && !musicPlaying) {
+                        initAudio();
+                    }
+                });
+            });
+        }
+        
+        // Настройка выбора игры
+        function setupGameSelector() {
+            const gameOptions = document.querySelectorAll('.game-option');
+            gameOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const gameId = this.getAttribute('data-game');
+                    switchGame(gameId);
+                    
+                    // Обновляем активный класс
+                    gameOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+        
+        // Переключение между играми
+        function switchGame(gameId) {
+            currentGame = parseInt(gameId);
+            
+            // Скрываем все игры
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Показываем выбранную игру
+            document.getElementById(`game${gameId}`).classList.add('active');
+            
+            // Останавливаем все текущие игры
+            stopAllGames();
+        }
+        
+        // Остановка всех игр
+        function stopAllGames() {
+            // Останавливаем игру 1
+            if (window.game1Active) {
+                clearInterval(window.timeInterval1);
+                window.game1Active = false;
+                document.getElementById('startBtn1').disabled = false;
+                document.getElementById('startBtn1').innerHTML = '<i class="fas fa-play"></i> Начать игру';
+            }
+            
+            // Останавливаем игру 2
+            if (window.game2Active) {
+                clearInterval(window.timeInterval2);
+                clearInterval(window.monsterMoveInterval);
+                clearInterval(window.autoFireInterval);
+                window.game2Active = false;
+                document.getElementById('startBtn2').disabled = false;
+                document.getElementById('startBtn2').innerHTML = '<i class="fas fa-play"></i> Начать игру';
+                document.getElementById('autoFireBtn').innerHTML = '<i class="fas fa-bolt"></i> Авто-стрельба';
+            }
+            
+            // Останавливаем игру 3
+            if (window.game3Active) {
+                clearInterval(window.timeInterval3);
+                window.game3Active = false;
+                document.getElementById('startBtn3').disabled = false;
+                document.getElementById('startBtn3').innerHTML = '<i class="fas fa-play"></i> Начать игру';
+            }
+            
+            // Останавливаем игру 4
+            if (window.game4Active) {
+                window.game4Active = false;
+                document.getElementById('startBtn4').disabled = false;
+                document.getElementById('startBtn4').innerHTML = '<i class="fas fa-play"></i> Начать игру';
+            }
+        }
+        
+        // ==================== ИГРА 1: Дед Мороз и подарки ====================
+        function initGame1() {
+            // Элементы игры
+            const gameBoard = document.getElementById('gameBoard1');
+            const santa = document.getElementById('santa');
+            const scoreElement = document.getElementById('score');
+            const timeElement = document.getElementById('time1');
+            const giftsLeftElement = document.getElementById('gifts-left');
+            const startBtn = document.getElementById('startBtn1');
+            const instructionsBtn = document.getElementById('instructionsBtn1');
+            const instructions = document.getElementById('instructions1');
+            const gameMessage = document.getElementById('gameMessage1');
+            const restartBtn = document.getElementById('restartBtn1');
+            const touchCenter = document.getElementById('touchCenter1');
+            
+            // Переменные игры
+            window.game1Score = 0;
+            window.game1TimeLeft = 15;
+            window.game1GiftsLeft = 10;
+            window.game1Active = false;
+            window.santaX = 0;
+            window.santaY = 0;
+            window.santaWidth = isMobile ? 50 : 60;
+            window.santaHeight = isMobile ? 65 : 75;
+            window.giftWidth = isMobile ? 35 : 40;
+            window.giftHeight = isMobile ? 35 : 40;
+            
+            const giftTypes = ['🎁', '🎄', '⭐', '🦌', '🔔', '❄️', '🍪', '🥛', '🧦', '🧸'];
+            const giftColors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#118AB2', '#EF476F', '#7209B7', '#F8961E', '#43AA8B', '#577590'];
+            
+            // Создание снежинок
+            function createSnowflakesGame1() {
+                createSnowflakes('snowflakes1');
+            }
+            
+            // Создание подарков
+            function createGifts() {
+                // Очищаем предыдущие подарки
+                const oldGifts = document.querySelectorAll('#gameBoard1 .gift');
+                oldGifts.forEach(gift => gift.remove());
+                
+                // Получаем размеры игрового поля
+                const boardWidth = gameBoard.offsetWidth;
+                const boardHeight = gameBoard.offsetHeight;
+                
+                // Создаем новые подарки
+                for (let i = 0; i < window.game1GiftsLeft; i++) {
+                    const gift = document.createElement('div');
+                    gift.classList.add('gift');
+                    
+                    // Случайная позиция с учетом границ
+                    const posX = Math.random() * (boardWidth - window.giftWidth - 20) + 10;
+                    const posY = Math.random() * (boardHeight - window.giftHeight - 20) + 10;
+                    
+                    // Случайный тип и цвет подарка
+                    const giftTypeIndex = Math.floor(Math.random() * giftTypes.length);
+                    const giftColorIndex = Math.floor(Math.random() * giftColors.length);
+                    
+                    gift.textContent = giftTypes[giftTypeIndex];
+                    gift.style.left = `${posX}px`;
+                    gift.style.top = `${posY}px`;
+                    gift.style.backgroundColor = giftColors[giftColorIndex];
+                    gift.dataset.collected = "false";
+                    
+                    gameBoard.appendChild(gift);
+                }
+            }
+            
+            // Проверка столкновений
+            function checkCollisions() {
+                const gifts = document.querySelectorAll('#gameBoard1 .gift');
+                const santaRect = {
+                    left: window.santaX,
+                    right: window.santaX + window.santaWidth,
+                    top: window.santaY,
+                    bottom: window.santaY + window.santaHeight
+                };
+                
+                gifts.forEach(gift => {
+                    if (gift.dataset.collected === "true") return;
+                    
+                    const giftRect = gift.getBoundingClientRect();
+                    const boardRect = gameBoard.getBoundingClientRect();
+                    
+                    const giftX = giftRect.left - boardRect.left;
+                    const giftY = giftRect.top - boardRect.top;
+                    
+                    const giftRectObj = {
+                        left: giftX,
+                        right: giftX + window.giftWidth,
+                        top: giftY,
+                        bottom: giftY + window.giftHeight
+                    };
+                    
+                    if (
+                        santaRect.left < giftRectObj.right &&
+                        santaRect.right > giftRectObj.left &&
+                        santaRect.top < giftRectObj.bottom &&
+                        santaRect.bottom > giftRectObj.top
+                    ) {
+                        gift.dataset.collected = "true";
+                        gift.classList.add('gift-collected');
+                        
+                        window.game1Score += 10;
+                        scoreElement.textContent = window.game1Score;
+                        
+                        window.game1GiftsLeft--;
+                        giftsLeftElement.textContent = window.game1GiftsLeft;
+                        
+                        setTimeout(() => {
+                            if (gift.parentNode) gift.remove();
+                        }, 500);
+                        
+                        if (window.game1GiftsLeft === 0) {
+                            endGame1(true);
+                        }
+                    }
+                });
+            }
+            
+            // Движение Деда Мороза
+            function moveSanta(direction) {
+                if (!window.game1Active) return;
+                
+                const step = isMobile ? 15 : 20;
+                
+                switch(direction) {
+                    case 'left':
+                        if (window.santaX > 5) window.santaX -= step;
+                        break;
+                    case 'up':
+                        if (window.santaY > 5) window.santaY -= step;
+                        break;
+                    case 'right':
+                        if (window.santaX < gameBoard.offsetWidth - window.santaWidth - 5) window.santaX += step;
+                        break;
+                    case 'down':
+                        if (window.santaY < gameBoard.offsetHeight - window.santaHeight - 5) window.santaY += step;
+                        break;
+                }
+                
+                santa.style.left = `${window.santaX}px`;
+                santa.style.top = `${window.santaY}px`;
+                
+                santa.classList.add('santa-move');
+                setTimeout(() => santa.classList.remove('santa-move'), 300);
+                
+                checkCollisions();
+            }
+            
+            // Управление с клавиатуры
+            document.addEventListener('keydown', (e) => {
+                if (!window.game1Active || currentGame !== 1) return;
+                
+                switch(e.key) {
+                    case 'ArrowLeft': moveSanta('left'); e.preventDefault(); break;
+                    case 'ArrowUp': moveSanta('up'); e.preventDefault(); break;
+                    case 'ArrowRight': moveSanta('right'); e.preventDefault(); break;
+                    case 'ArrowDown': moveSanta('down'); e.preventDefault(); break;
+                }
+            });
+            
+            // Сенсорное управление
+            function setupTouchControlsGame1() {
+                // Кнопки управления
+                document.querySelectorAll('#touchControls1 .touch-btn[data-direction]').forEach(btn => {
+                    btn.addEventListener('touchstart', (e) => {
+                        if (currentGame !== 1) return;
+                        e.preventDefault();
+                        moveSanta(btn.getAttribute('data-direction'));
+                    });
+                    
+                    btn.addEventListener('click', (e) => {
+                        if (currentGame !== 1) return;
+                        e.preventDefault();
+                        moveSanta(btn.getAttribute('data-direction'));
+                    });
+                });
+                
+                // Центральная кнопка
+                touchCenter.addEventListener('touchstart', (e) => {
+                    if (currentGame !== 1) return;
+                    e.preventDefault();
+                    checkCollisions();
+                });
+                
+                touchCenter.addEventListener('click', (e) => {
+                    if (currentGame !== 1) return;
+                    e.preventDefault();
+                    checkCollisions();
+                });
+                
+                // Перемещение касанием
+                gameBoard.addEventListener('touchstart', (e) => {
+                    if (!window.game1Active || currentGame !== 1) return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    moveSantaToTouch(touch.clientX, touch.clientY);
+                });
+                
+                gameBoard.addEventListener('touchmove', (e) => {
+                    if (!window.game1Active || currentGame !== 1) return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    moveSantaToTouch(touch.clientX, touch.clientY);
+                });
+            }
+            
+            // Перемещение к точке касания
+            function moveSantaToTouch(x, y) {
+                if (!window.game1Active) return;
+                
+                const boardRect = gameBoard.getBoundingClientRect();
+                let targetX = x - boardRect.left - window.santaWidth / 2;
+                let targetY = y - boardRect.top - window.santaHeight / 2;
+                
+                targetX = Math.max(5, Math.min(targetX, boardRect.width - window.santaWidth - 5));
+                targetY = Math.max(5, Math.min(targetY, boardRect.height - window.santaHeight - 5));
+                
+                const dx = targetX - window.santaX;
+                const dy = targetY - window.santaY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 5) {
+                    window.santaX = targetX;
+                    window.santaY = targetY;
+                    
+                    santa.style.left = `${window.santaX}px`;
+                    santa.style.top = `${window.santaY}px`;
+                    
+                    setTimeout(() => checkCollisions(), 50);
+                }
+            }
+            
+            // Начало игры
+            function startGame1() {
+                if (window.game1Active) return;
+                
+                window.game1Score = 0;
+                window.game1TimeLeft = 15;
+                window.game1GiftsLeft = 10;
+                
+                scoreElement.textContent = window.game1Score;
+                timeElement.textContent = window.game1TimeLeft;
+                giftsLeftElement.textContent = window.game1GiftsLeft;
+                
+                const boardWidth = gameBoard.offsetWidth;
+                const boardHeight = gameBoard.offsetHeight;
+                window.santaX = boardWidth / 2 - window.santaWidth / 2;
+                window.santaY = boardHeight / 2 - window.santaHeight / 2;
+                
+                santa.style.left = `${window.santaX}px`;
+                santa.style.top = `${window.santaY}px`;
+                
+                createGifts();
+                
+                window.game1Active = true;
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Игра идет...';
+                
+                window.timeInterval1 = setInterval(() => {
+                    window.game1TimeLeft--;
+                    timeElement.textContent = window.game1TimeLeft;
+                    
+                    if (window.game1TimeLeft <= 0) {
+                        endGame1(false);
+                    }
+                }, 1000);
+                
+                instructions.style.display = 'none';
+                gameMessage.style.display = 'none';
+            }
+            
+            // Конец игры
+            function endGame1(isWin) {
+                window.game1Active = false;
+                clearInterval(window.timeInterval1);
+                
+                const messageTitle = document.getElementById('messageTitle1');
+                const messageText = document.getElementById('messageText1');
+                
+                if (isWin) {
+                    messageTitle.textContent = 'Поздравляем!';
+                    messageText.textContent = `Вы собрали все подарки за ${15 - window.game1TimeLeft} секунд! Ваш счет: ${window.game1Score}`;
+                } else {
+                    messageTitle.textContent = 'Время вышло!';
+                    messageText.textContent = `Вы собрали ${window.game1Score/10} из 10 подарков. Попробуйте еще раз!`;
+                }
+                
+                gameMessage.style.display = 'block';
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-redo"></i> Начать заново';
+            }
+            
+            // Перезапуск игры
+            function restartGame1() {
+                gameMessage.style.display = 'none';
+                startGame1();
+            }
+            
+            // Показать/скрыть инструкции
+            function toggleInstructions1() {
+                instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+            }
+            
+            // Инициализация игры
+            function initGame1Internal() {
+                createSnowflakesGame1();
+                setupTouchControlsGame1();
+                
+                startBtn.addEventListener('click', startGame1);
+                instructionsBtn.addEventListener('click', toggleInstructions1);
+                restartBtn.addEventListener('click', restartGame1);
+                
+                instructions.style.display = 'none';
+                
+                setTimeout(() => {
+                    const boardWidth = gameBoard.offsetWidth;
+                    const boardHeight = gameBoard.offsetHeight;
+                    window.santaX = boardWidth / 2 - window.santaWidth / 2;
+                    window.santaY = boardHeight / 2 - window.santaHeight / 2;
+                    
+                    santa.style.left = `${window.santaX}px`;
+                    santa.style.top = `${window.santaY}px`;
+                    
+                    createGifts();
+                }, 100);
+            }
+            
+            initGame1Internal();
+        }
+        
+        // ==================== ИГРА 2: Снежный обстрел ====================
+        function initGame2() {
+            // Элементы игры
+            const gameBoard = document.getElementById('gameBoard2');
+            const monster = document.getElementById('monster');
+            const hitsElement = document.getElementById('hits');
+            const timeElement = document.getElementById('time2');
+            const healthElement = document.getElementById('monster-health');
+            const healthValueElement = document.getElementById('healthValue');
+            const healthFillElement = document.getElementById('healthFill');
+            const healthTextElement = document.getElementById('healthText');
+            const startBtn = document.getElementById('startBtn2');
+            const instructionsBtn = document.getElementById('instructionsBtn2');
+            const instructions = document.getElementById('instructions2');
+            const gameMessage = document.getElementById('gameMessage2');
+            const restartBtn = document.getElementById('restartBtn2');
+            const fireBtn = document.getElementById('fireBtn');
+            const autoFireBtn = document.getElementById('autoFireBtn');
+            
+            // Переменные игры
+            window.game2TotalDamage = 0;
+            window.game2TimeLeft = 15;
+            window.game2Active = false;
+            window.monsterHealth = 100;
+            window.monsterMaxHealth = 100;
+            window.monsterX = 0;
+            window.monsterY = 0;
+            window.monsterWidth = isMobile ? 60 : 80;
+            window.monsterHeight = isMobile ? 60 : 80;
+            window.monsterDirectionX = 1;
+            window.monsterDirectionY = 1;
+            window.monsterSpeed = isMobile ? 3 : 4;
+            window.autoFireActive = false;
+            
+            // Создание снежинок
+            function createSnowflakesGame2() {
+                createSnowflakes('snowflakes2');
+            }
+            
+            // Обновление здоровья монстра
+            function updateMonsterHealth() {
+                healthElement.textContent = window.monsterHealth;
+                healthValueElement.textContent = window.monsterHealth;
+                
+                const healthPercent = (window.monsterHealth / window.monsterMaxHealth) * 100;
+                healthFillElement.style.width = `${healthPercent}%`;
+                
+                // Меняем цвет здоровья в зависимости от уровня
+                if (healthPercent > 50) {
+                    healthFillElement.style.background = 'linear-gradient(to right, #4ECDC4, #06D6A0)';
+                } else if (healthPercent > 20) {
+                    healthFillElement.style.background = 'linear-gradient(to right, #FFD166, #FF9E00)';
+                } else {
+                    healthFillElement.style.background = 'linear-gradient(to right, #FF6B6B, #EF476F)';
+                }
+            }
+            
+            // Движение монстра
+            function moveMonster() {
+                if (!window.game2Active) return;
+                
+                const boardWidth = gameBoard.offsetWidth;
+                const boardHeight = gameBoard.offsetHeight;
+                
+                window.monsterX += window.monsterDirectionX * window.monsterSpeed;
+                window.monsterY += window.monsterDirectionY * window.monsterSpeed;
+                
+                // Отскок от границ
+                if (window.monsterX <= 0 || window.monsterX >= boardWidth - window.monsterWidth) {
+                    window.monsterDirectionX *= -1;
+                    window.monsterX = Math.max(0, Math.min(window.monsterX, boardWidth - window.monsterWidth));
+                }
+                
+                if (window.monsterY <= 0 || window.monsterY >= boardHeight - window.monsterHeight) {
+                    window.monsterDirectionY *= -1;
+                    window.monsterY = Math.max(0, Math.min(window.monsterY, boardHeight - window.monsterHeight));
+                }
+                
+                monster.style.left = `${window.monsterX}px`;
+                monster.style.top = `${window.monsterY}px`;
+            }
+            
+            // Бросок снежка
+            function throwSnowball(x, y) {
+                if (!window.game2Active) return;
+                
+                // Создаем снежок
+                const snowball = document.createElement('div');
+                snowball.classList.add('snowball');
+                snowball.style.left = `${x}px`;
+                snowball.style.top = `${y}px`;
+                gameBoard.appendChild(snowball);
+                
+                // Анимация снежка
+                snowball.classList.add('snowball-throw');
+                
+                // Проверка попадания
+                const snowballRect = {
+                    left: x,
+                    right: x + 30,
+                    top: y,
+                    bottom: y + 30
+                };
+                
+                const monsterRect = {
+                    left: window.monsterX,
+                    right: window.monsterX + window.monsterWidth,
+                    top: window.monsterY,
+                    bottom: window.monsterY + window.monsterHeight
+                };
+                
+                // Проверяем попадание
+                if (
+                    snowballRect.left < monsterRect.right &&
+                    snowballRect.right > monsterRect.left &&
+                    snowballRect.top < monsterRect.bottom &&
+                    snowballRect.bottom > monsterRect.top
+                ) {
+                    // Попадание! Наносим случайный урон от 5 до 15
+                    const damage = Math.floor(Math.random() * 11) + 5; // 5-15
+                    window.monsterHealth -= damage;
+                    window.game2TotalDamage += damage;
+                    
+                    // Обновляем статистику
+                    hitsElement.textContent = window.game2TotalDamage;
+                    updateMonsterHealth();
+                    
+                    // Анимация попадания
+                    monster.classList.add('monster-hit');
+                    setTimeout(() => monster.classList.remove('monster-hit'), 300);
+                    
+                    // Эффект попадания
+                    const hitEffect = document.createElement('div');
+                    hitEffect.classList.add('hit-effect');
+                    hitEffect.style.left = `${window.monsterX + window.monsterWidth/2 - 20}px`;
+                    hitEffect.style.top = `${window.monsterY + window.monsterHeight/2 - 20}px`;
+                    gameBoard.appendChild(hitEffect);
+                    
+                    setTimeout(() => {
+                        if (hitEffect.parentNode) hitEffect.remove();
+                    }, 500);
+                    
+                    // Проверяем, умер ли монстр
+                    if (window.monsterHealth <= 0) {
+                        window.monsterHealth = 0;
+                        updateMonsterHealth();
+                        monsterWin();
+                    }
+                }
+                
+                // Удаляем снежок после анимации
+                setTimeout(() => {
+                    if (snowball.parentNode) snowball.remove();
+                }, 500);
+            }
+            
+            // Победа над монстром
+            function monsterWin() {
+                if (!window.game2Active) return;
+                
+                window.game2Active = false;
+                clearInterval(window.timeInterval2);
+                clearInterval(window.monsterMoveInterval);
+                clearInterval(window.autoFireInterval);
+                
+                // Анимация смерти монстра
+                monster.classList.add('monster-dead');
+                
+                const messageTitle = document.getElementById('messageTitle2');
+                const messageText = document.getElementById('messageText2');
+                
+                messageTitle.textContent = 'Поздравляем!';
+                messageText.textContent = `Вы уничтожили монстра за ${15 - window.game2TimeLeft} секунд! Нанесено урона: ${window.game2TotalDamage}`;
+                
+                setTimeout(() => {
+                    document.getElementById('gameMessage2').style.display = 'block';
+                    startBtn.disabled = false;
+                    startBtn.innerHTML = '<i class="fas fa-redo"></i> Начать заново';
+                    autoFireBtn.innerHTML = '<i class="fas fa-bolt"></i> Авто-стрельба';
+                }, 1000);
+            }
+            
+            // Автоматическая стрельба
+            function toggleAutoFire() {
+                if (!window.game2Active) return;
+                
+                window.autoFireActive = !window.autoFireActive;
+                
+                if (window.autoFireActive) {
+                    autoFireBtn.innerHTML = '<i class="fas fa-stop"></i> Стоп авто-стрельба';
+                    
+                    window.autoFireInterval = setInterval(() => {
+                        if (!window.game2Active) {
+                            clearInterval(window.autoFireInterval);
+                            return;
+                        }
+                        
+                        // Стреляем в направлении монстра
+                        const offsetX = (Math.random() - 0.5) * 30;
+                        const offsetY = (Math.random() - 0.5) * 30;
+                        const targetX = window.monsterX + offsetX;
+                        const targetY = window.monsterY + offsetY;
+                        
+                        throwSnowball(targetX, targetY);
+                    }, 300);
+                } else {
+                    autoFireBtn.innerHTML = '<i class="fas fa-bolt"></i> Авто-стрельба';
+                    clearInterval(window.autoFireInterval);
+                }
+            }
+            
+            // Управление
+            function setupControlsGame2() {
+                // Клик по монстру
+                monster.addEventListener('click', (e) => {
+                    if (!window.game2Active || currentGame !== 2) return;
+                    e.preventDefault();
+                    throwSnowball(window.monsterX + window.monsterWidth/2 - 15, window.monsterY + window.monsterHeight/2 - 15);
+                });
+                
+                // Клик по игровому полю
+                gameBoard.addEventListener('click', (e) => {
+                    if (!window.game2Active || currentGame !== 2) return;
+                    e.preventDefault();
+                    
+                    const rect = gameBoard.getBoundingClientRect();
+                    const x = e.clientX - rect.left - 15;
+                    const y = e.clientY - rect.top - 15;
+                    
+                    throwSnowball(x, y);
+                });
+                
+                // Сенсорное управление
+                gameBoard.addEventListener('touchstart', (e) => {
+                    if (!window.game2Active || currentGame !== 2) return;
+                    e.preventDefault();
+                    
+                    const touch = e.touches[0];
+                    const rect = gameBoard.getBoundingClientRect();
+                    const x = touch.clientX - rect.left - 15;
+                    const y = touch.clientY - rect.top - 15;
+                    
+                    throwSnowball(x, y);
+                });
+                
+                // Кнопка выстрела
+                fireBtn.addEventListener('click', (e) => {
+                    if (!window.game2Active || currentGame !== 2) return;
+                    e.preventDefault();
+                    
+                    // Стреляем в направлении монстра
+                    throwSnowball(window.monsterX + window.monsterWidth/2 - 15, window.monsterY + window.monsterHeight/2 - 15);
+                });
+                
+                fireBtn.addEventListener('touchstart', (e) => {
+                    if (!window.game2Active || currentGame !== 2) return;
+                    e.preventDefault();
+                    
+                    throwSnowball(window.monsterX + window.monsterWidth/2 - 15, window.monsterY + window.monsterHeight/2 - 15);
+                });
+                
+                // Кнопка авто-стрельбы
+                autoFireBtn.addEventListener('click', (e) => {
+                    if (!window.game2Active || currentGame !== 2) return;
+                    e.preventDefault();
+                    toggleAutoFire();
+                });
+                
+                autoFireBtn.addEventListener('touchstart', (e) => {
+                    if (!window.game2Active || currentGame !== 2) return;
+                    e.preventDefault();
+                    toggleAutoFire();
+                });
+            }
+            
+            // Начало игры
+            function startGame2() {
+                if (window.game2Active) return;
+                
+                window.game2TotalDamage = 0;
+                window.game2TimeLeft = 15;
+                window.monsterHealth = 100;
+                window.autoFireActive = false;
+                
+                hitsElement.textContent = window.game2TotalDamage;
+                timeElement.textContent = window.game2TimeLeft;
+                updateMonsterHealth();
+                
+                const boardWidth = gameBoard.offsetWidth;
+                const boardHeight = gameBoard.offsetHeight;
+                window.monsterX = boardWidth / 2 - window.monsterWidth / 2;
+                window.monsterY = boardHeight / 2 - window.monsterHeight / 2;
+                
+                monster.style.left = `${window.monsterX}px`;
+                monster.style.top = `${window.monsterY}px`;
+                monster.classList.remove('monster-dead');
+                
+                window.game2Active = true;
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Игра идет...';
+                autoFireBtn.innerHTML = '<i class="fas fa-bolt"></i> Авто-стрельба';
+                
+                // Таймер
+                window.timeInterval2 = setInterval(() => {
+                    window.game2TimeLeft--;
+                    timeElement.textContent = window.game2TimeLeft;
+                    
+                    if (window.game2TimeLeft <= 0) {
+                        endGame2();
+                    }
+                }, 1000);
+                
+                // Движение монстра
+                window.monsterMoveInterval = setInterval(moveMonster, 50);
+                
+                instructions.style.display = 'none';
+                gameMessage.style.display = 'none';
+            }
+            
+            // Конец игры (по времени)
+            function endGame2() {
+                window.game2Active = false;
+                clearInterval(window.timeInterval2);
+                clearInterval(window.monsterMoveInterval);
+                clearInterval(window.autoFireInterval);
+                
+                const messageTitle = document.getElementById('messageTitle2');
+                const messageText = document.getElementById('messageText2');
+                
+                if (window.monsterHealth <= 0) {
+                    messageTitle.textContent = 'Поздравляем!';
+                    messageText.textContent = `Вы уничтожили монстра! Нанесено урона: ${window.game2TotalDamage}`;
+                } else {
+                    messageTitle.textContent = 'Время вышло!';
+                    messageText.textContent = `Вы не успели уничтожить монстра! Нанесено урона: ${window.game2TotalDamage}. Осталось здоровья: ${window.monsterHealth}`;
+                }
+                
+                gameMessage.style.display = 'block';
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-redo"></i> Начать заново';
+                autoFireBtn.innerHTML = '<i class="fas fa-bolt"></i> Авто-стрельба';
+            }
+            
+            // Перезапуск игры
+            function restartGame2() {
+                gameMessage.style.display = 'none';
+                startGame2();
+            }
+            
+            // Показать/скрыть инструкции
+            function toggleInstructions2() {
+                instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+            }
+            
+            // Инициализация игры
+            function initGame2Internal() {
+                createSnowflakesGame2();
+                setupControlsGame2();
+                
+                startBtn.addEventListener('click', startGame2);
+                instructionsBtn.addEventListener('click', toggleInstructions2);
+                restartBtn.addEventListener('click', restartGame2);
+                
+                instructions.style.display = 'none';
+                
+                setTimeout(() => {
+                    const boardWidth = gameBoard.offsetWidth;
+                    const boardHeight = gameBoard.offsetHeight;
+                    window.monsterX = boardWidth / 2 - window.monsterWidth / 2;
+                    window.monsterY = boardHeight / 2 - window.monsterHeight / 2;
+                    
+                    monster.style.left = `${window.monsterX}px`;
+                    monster.style.top = `${window.monsterY}px`;
+                    updateMonsterHealth();
+                }, 100);
+            }
+            
+            initGame2Internal();
+        }
+        
+        // ==================== ИГРА 3: Наряди ёлочку ====================
+        function initGame3() {
+            // Элементы игры
+            const sampleTreeImage = document.getElementById('sampleTreeImage');
+            const playerTreeImage = document.getElementById('playerTreeImage');
+            const ornamentsContainer = document.getElementById('ornamentsContainer');
+            const correctOrnamentsElement = document.getElementById('correct-ornaments');
+            const totalOrnamentsElement = document.getElementById('total-ornaments');
+            const timeElement = document.getElementById('time3');
+            const startBtn = document.getElementById('startBtn3');
+            const instructionsBtn = document.getElementById('instructionsBtn3');
+            const instructions = document.getElementById('instructions3');
+            const gameMessage = document.getElementById('gameMessage3');
+            const restartBtn = document.getElementById('restartBtn3');
+            
+            // Переменные игры
+            window.game3Active = false;
+            window.game3TimeLeft = 120;
+            window.game3CorrectOrnaments = 0;
+            window.game3TotalOrnaments = 8;
+            window.game3SampleSpots = [];
+            window.game3PlayerSpots = [];
+            window.game3Ornaments = [];
+            window.draggedOrnament = null;
+            
+            // Позиции для шариков на ёлке (процентные координаты)
+            const treeSpotPositions = [
+                { x: 50, y: 15 },  // Верх
+                { x: 30, y: 25 },  // Верх-лево
+                { x: 70, y: 25 },  // Верх-право
+                { x: 40, y: 40 },  // Центр-лево
+                { x: 60, y: 40 },  // Центр-право
+                { x: 20, y: 55 },  // Низ-лево
+                { x: 80, y: 55 },  // Низ-право
+                { x: 50, y: 70 }   // Низ-центр
+            ];
+            
+            // Создание ёлки с местами для шариков
+            function createTreeSpots() {
+                // Очищаем предыдущие места
+                sampleTreeImage.innerHTML = '';
+                playerTreeImage.innerHTML = '';
+                
+                window.game3SampleSpots = [];
+                window.game3PlayerSpots = [];
+                
+                // Создаем случайный порядок цветов для образца
+                const shuffledColors = [...ornamentColors].sort(() => Math.random() - 0.5);
+                
+                // Создаем места для шариков на образце
+                treeSpotPositions.forEach((position, index) => {
+                    // Место на образце
+                    const sampleSpot = document.createElement('div');
+                    sampleSpot.className = 'tree-spot filled';
+                    sampleSpot.style.left = `${position.x}%`;
+                    sampleSpot.style.top = `${position.y}%`;
+                    sampleSpot.style.backgroundColor = shuffledColors[index].color;
+                    sampleSpot.textContent = shuffledColors[index].symbol;
+                    sampleSpot.dataset.color = shuffledColors[index].color;
+                    sampleSpot.dataset.symbol = shuffledColors[index].symbol;
+                    sampleSpot.dataset.index = index;
+                    
+                    sampleTreeImage.appendChild(sampleSpot);
+                    window.game3SampleSpots.push({
+                        element: sampleSpot,
+                        color: shuffledColors[index].color,
+                        symbol: shuffledColors[index].symbol,
+                        index: index,
+                        filled: true
+                    });
+                    
+                    // Пустое место на игровой ёлке
+                    const playerSpot = document.createElement('div');
+                    playerSpot.className = 'tree-spot';
+                    playerSpot.style.left = `${position.x}%`;
+                    playerSpot.style.top = `${position.y}%`;
+                    playerSpot.dataset.index = index;
+                    playerSpot.dataset.filled = 'false';
+                    
+                    playerTreeImage.appendChild(playerSpot);
+                    window.game3PlayerSpots.push({
+                        element: playerSpot,
+                        color: null,
+                        symbol: null,
+                        index: index,
+                        filled: false
+                    });
+                });
+            }
+            
+            // Создание шариков для перетаскивания
+            function createOrnaments() {
+                ornamentsContainer.innerHTML = '';
+                window.game3Ornaments = [];
+                
+                // Создаем копию цветов и перемешиваем
+                const availableColors = [...ornamentColors].sort(() => Math.random() - 0.5);
+                
+                // Создаем по одному шарику каждого цвета
+                availableColors.forEach((ornamentData, index) => {
+                    const ornament = document.createElement('div');
+                    ornament.className = 'ornament';
+                    ornament.style.backgroundColor = ornamentData.color;
+                    ornament.textContent = ornamentData.symbol;
+                    ornament.dataset.color = ornamentData.color;
+                    ornament.dataset.symbol = ornamentData.symbol;
+                    ornament.dataset.index = index;
+                    ornament.draggable = true;
+                    
+                    ornamentsContainer.appendChild(ornament);
+                    window.game3Ornaments.push({
+                        element: ornament,
+                        color: ornamentData.color,
+                        symbol: ornamentData.symbol,
+                        index: index,
+                        placed: false
+                    });
+                    
+                    // Настройка перетаскивания
+                    setupOrnamentDrag(ornament);
+                });
+            }
+            
+            // Настройка перетаскивания для шарика
+            function setupOrnamentDrag(ornament) {
+                // Для десктопов
+                ornament.addEventListener('dragstart', handleDragStart);
+                ornament.addEventListener('dragend', handleDragEnd);
+                
+                // Для мобильных устройств
+                ornament.addEventListener('touchstart', handleTouchStart, { passive: false });
+                ornament.addEventListener('touchmove', handleTouchMove, { passive: false });
+                ornament.addEventListener('touchend', handleTouchEnd);
+                
+                // Разрешаем перетаскивание на ёлку
+                const playerTree = document.getElementById('playerTree');
+                playerTree.addEventListener('dragover', handleDragOver);
+                playerTree.addEventListener('drop', handleDrop);
+                
+                // Для мобильных
+                playerTree.addEventListener('touchmove', handleTouchMove, { passive: false });
+                playerTree.addEventListener('touchend', handleTouchEnd);
+            }
+            
+            // Обработчики перетаскивания
+            function handleDragStart(e) {
+                if (!window.game3Active) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                window.draggedOrnament = this;
+                this.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', this.dataset.index);
+            }
+            
+            function handleDragEnd(e) {
+                if (window.draggedOrnament) {
+                    window.draggedOrnament.classList.remove('dragging');
+                    window.draggedOrnament = null;
+                }
+            }
+            
+            function handleDragOver(e) {
+                if (!window.game3Active) return;
+                e.preventDefault();
+            }
+            
+            function handleDrop(e) {
+                if (!window.game3Active || !window.draggedOrnament) return;
+                
+                e.preventDefault();
+                
+                // Получаем координаты клика относительно ёлки
+                const treeRect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - treeRect.left;
+                const y = e.clientY - treeRect.top;
+                
+                // Находим ближайшее место для шарика
+                const closestSpot = findClosestSpot(x, y, treeRect.width, treeRect.height);
+                
+                if (closestSpot && !closestSpot.filled) {
+                    // Размещаем шарик
+                    placeOrnament(window.draggedOrnament, closestSpot);
+                }
+                
+                window.draggedOrnament.classList.remove('dragging');
+                window.draggedOrnament = null;
+            }
+            
+            // Обработчики для мобильных устройств
+            function handleTouchStart(e) {
+                if (!window.game3Active) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                window.draggedOrnament = this;
+                this.classList.add('dragging');
+                e.preventDefault();
+            }
+            
+            function handleTouchMove(e) {
+                if (!window.game3Active || !window.draggedOrnament) return;
+                
+                e.preventDefault();
+                
+                if (e.targetTouches.length === 1) {
+                    const touch = e.targetTouches[0];
+                    window.draggedOrnament.style.position = 'fixed';
+                    window.draggedOrnament.style.left = (touch.clientX - 25) + 'px';
+                    window.draggedOrnament.style.top = (touch.clientY - 25) + 'px';
+                    window.draggedOrnament.style.zIndex = '1000';
+                }
+            }
+            
+            function handleTouchEnd(e) {
+                if (!window.game3Active || !window.draggedOrnament) return;
+                
+                e.preventDefault();
+                
+                // Получаем координаты касания
+                const touch = e.changedTouches[0];
+                const playerTree = document.getElementById('playerTree');
+                const treeRect = playerTree.getBoundingClientRect();
+                
+                // Проверяем, было ли касание внутри ёлки
+                if (touch.clientX >= treeRect.left && touch.clientX <= treeRect.right &&
+                    touch.clientY >= treeRect.top && touch.clientY <= treeRect.bottom) {
+                    
+                    const x = touch.clientX - treeRect.left;
+                    const y = touch.clientY - treeRect.top;
+                    
+                    // Находим ближайшее место для шарика
+                    const closestSpot = findClosestSpot(x, y, treeRect.width, treeRect.height);
+                    
+                    if (closestSpot && !closestSpot.filled) {
+                        // Размещаем шарик
+                        placeOrnament(window.draggedOrnament, closestSpot);
+                    }
+                }
+                
+                // Возвращаем шарик в исходное состояние
+                window.draggedOrnament.style.position = '';
+                window.draggedOrnament.style.left = '';
+                window.draggedOrnament.style.top = '';
+                window.draggedOrnament.style.zIndex = '';
+                window.draggedOrnament.classList.remove('dragging');
+                window.draggedOrnament = null;
+            }
+            
+            // Поиск ближайшего места для шарика
+            function findClosestSpot(x, y, treeWidth, treeHeight) {
+                let closestSpot = null;
+                let minDistance = Infinity;
+                
+                window.game3PlayerSpots.forEach(spot => {
+                    if (!spot.filled) {
+                        // Конвертируем проценты в пиксели
+                        const spotX = (spot.element.offsetLeft / treeWidth) * 100;
+                        const spotY = (spot.element.offsetTop / treeHeight) * 100;
+                        
+                        // Конвертируем координаты клика в проценты
+                        const clickX = (x / treeWidth) * 100;
+                        const clickY = (y / treeHeight) * 100;
+                        
+                        // Вычисляем расстояние
+                        const distance = Math.sqrt(
+                            Math.pow(clickX - spotX, 2) + Math.pow(clickY - spotY, 2)
+                        );
+                        
+                        if (distance < minDistance && distance < 15) { // 15% - радиус захвата
+                            minDistance = distance;
+                            closestSpot = spot;
+                        }
+                    }
+                });
+                
+                return closestSpot;
+            }
+            
+            // Размещение шарика на ёлке
+            function placeOrnament(ornamentElement, spot) {
+                // Находим данные шарика
+                const ornamentIndex = parseInt(ornamentElement.dataset.index);
+                const ornamentData = window.game3Ornaments.find(o => o.index === ornamentIndex);
+                
+                if (!ornamentData || ornamentData.placed) return;
+                
+                // Обновляем место на ёлке
+                spot.element.style.backgroundColor = ornamentData.color;
+                spot.element.textContent = ornamentData.symbol;
+                spot.element.classList.add('filled');
+                spot.element.dataset.filled = 'true';
+                spot.color = ornamentData.color;
+                spot.symbol = ornamentData.symbol;
+                spot.filled = true;
+                
+                // Помечаем шарик как размещенный
+                ornamentData.placed = true;
+                ornamentElement.classList.add('placed');
+                ornamentElement.style.opacity = '0.5';
+                ornamentElement.style.cursor = 'default';
+                ornamentElement.draggable = false;
+                
+                // Проверяем правильность размещения
+                checkOrnamentPlacement(spot);
+                
+                // Обновляем статистику
+                updateGame3Stats();
+                
+                // Проверяем, все ли шарики размещены
+                checkGame3Completion();
+            }
+            
+            // Проверка правильности размещения шарика
+            function checkOrnamentPlacement(spot) {
+                const sampleSpot = window.game3SampleSpots.find(s => s.index === spot.index);
+                
+                if (sampleSpot && spot.color === sampleSpot.color) {
+                    // Правильное размещение
+                    spot.element.classList.add('correct-placement');
+                    window.game3CorrectOrnaments++;
+                    
+                    // Воспроизводим приятный звук (если музыка включена)
+                    if (musicPlaying && audioContext) {
+                        playNote(523.25, 0.3); // Нота C5
+                    }
+                } else {
+                    // Неправильное размещение
+                    spot.element.classList.add('wrong-placement');
+                    
+                    // Воспроизводим звук ошибки (если музыка включена)
+                    if (musicPlaying && audioContext) {
+                        playNote(261.63, 0.3); // Нота C4
+                    }
+                }
+                
+                // Убираем анимации через время
+                setTimeout(() => {
+                    spot.element.classList.remove('correct-placement', 'wrong-placement');
+                }, 500);
+            }
+            
+            // Обновление статистики игры
+            function updateGame3Stats() {
+                correctOrnamentsElement.textContent = window.game3CorrectOrnaments;
+                totalOrnamentsElement.textContent = window.game3TotalOrnaments;
+            }
+            
+            // Проверка завершения игры
+            function checkGame3Completion() {
+                // Проверяем, все ли шарики размещены
+                const allPlaced = window.game3PlayerSpots.every(spot => spot.filled);
+                
+                if (allPlaced) {
+                    // Все шарики размещены
+                    if (window.game3CorrectOrnaments === window.game3TotalOrnaments) {
+                        // Все правильно - победа!
+                        endGame3(true);
+                    } else {
+                        // Не все правильно, но время может еще быть
+                        // Игрок может продолжать исправлять
+                    }
+                }
+            }
+            
+            // Начало игры
+            function startGame3() {
+                if (window.game3Active) return;
+                
+                window.game3Active = true;
+                window.game3TimeLeft = 120;
+                window.game3CorrectOrnaments = 0;
+                
+                // Сбрасываем и создаем новые элементы
+                createTreeSpots();
+                createOrnaments();
+                
+                // Обновляем статистику
+                updateGame3Stats();
+                timeElement.textContent = window.game3TimeLeft;
+                
+                // Настраиваем кнопки
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Игра идет...';
+                
+                // Запускаем таймер
+                window.timeInterval3 = setInterval(() => {
+                    window.game3TimeLeft--;
+                    timeElement.textContent = window.game3TimeLeft;
+                    
+                    if (window.game3TimeLeft <= 0) {
+                        endGame3(false);
+                    }
+                }, 1000);
+                
+                // Скрываем инструкции и сообщения
+                instructions.style.display = 'none';
+                gameMessage.style.display = 'none';
+            }
+            
+            // Конец игры
+            function endGame3(isWin) {
+                window.game3Active = false;
+                clearInterval(window.timeInterval3);
+                
+                const messageTitle = document.getElementById('messageTitle3');
+                const messageText = document.getElementById('messageText3');
+                
+                if (isWin) {
+                    messageTitle.textContent = 'Поздравляем!';
+                    messageText.textContent = `Вы правильно украсили ёлочку за ${120 - window.game3TimeLeft} секунд!`;
+                } else {
+                    messageTitle.textContent = 'Время вышло!';
+                    messageText.textContent = `Вы правильно разместили ${window.game3CorrectOrnaments} из ${window.game3TotalOrnaments} шариков. Попробуйте еще раз!`;
+                }
+                
+                gameMessage.style.display = 'block';
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-redo"></i> Начать заново';
+            }
+            
+            // Перезапуск игры
+            function restartGame3() {
+                gameMessage.style.display = 'none';
+                startGame3();
+            }
+            
+            // Показать/скрыть инструкции
+            function toggleInstructions3() {
+                instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+            }
+            
+            // Инициализация игры
+            function initGame3Internal() {
+                // Создаем начальное состояние
+                createTreeSpots();
+                createOrnaments();
+                updateGame3Stats();
+                
+                // Настраиваем обработчики событий
+                startBtn.addEventListener('click', startGame3);
+                instructionsBtn.addEventListener('click', toggleInstructions3);
+                restartBtn.addEventListener('click', restartGame3);
+                
+                instructions.style.display = 'none';
+            }
+            
+            initGame3Internal();
+        }
+        
+        // ==================== ИГРА 4: Новогодние пары ====================
+        function initGame4() {
+            // Элементы игры
+            const cardsContainer = document.getElementById('cardsContainer');
+            const matchesElement = document.getElementById('matches');
+            const attemptsElement = document.getElementById('attempts');
+            const movesElement = document.getElementById('moves');
+            const startBtn = document.getElementById('startBtn4');
+            const instructionsBtn = document.getElementById('instructionsBtn4');
+            const instructions = document.getElementById('instructions4');
+            const gameMessage = document.getElementById('gameMessage4');
+            const restartBtn = document.getElementById('restartBtn4');
+            
+            // Переменные игры
+            window.game4Active = false;
+            window.game4Matches = 0;
+            window.game4TotalPairs = 8;
+            window.game4Attempts = 7;
+            window.game4Moves = 0;
+            window.game4FlippedCards = [];
+            window.game4MatchedCards = [];
+            window.game4Cards = [];
+            
+            // Создание карточек
+            function createCards() {
+                cardsContainer.innerHTML = '';
+                window.game4Cards = [];
+                window.game4FlippedCards = [];
+                window.game4MatchedCards = [];
+                
+                // Создаем пары символов
+                let cardSymbolsCopy = [...cardSymbols];
+                let selectedSymbols = [];
+                
+                // Выбираем 8 случайных символов (по 2 каждого)
+                for (let i = 0; i < window.game4TotalPairs; i++) {
+                    const randomIndex = Math.floor(Math.random() * cardSymbolsCopy.length);
+                    const symbol = cardSymbolsCopy[randomIndex];
+                    selectedSymbols.push(symbol, symbol); // Добавляем дважды для пары
+                    cardSymbolsCopy.splice(randomIndex, 1); // Удаляем использованный символ
+                }
+                
+                // Перемешиваем выбранные символы
+                selectedSymbols.sort(() => Math.random() - 0.5);
+                
+                // Создаем карточки
+                selectedSymbols.forEach((symbol, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.dataset.index = index;
+                    card.dataset.symbol = symbol;
+                    
+                    const front = document.createElement('div');
+                    front.className = 'front';
+                    front.textContent = symbol;
+                    
+                    const back = document.createElement('div');
+                    back.className = 'back';
+                    back.textContent = '?';
+                    
+                    card.appendChild(front);
+                    card.appendChild(back);
+                    
+                    cardsContainer.appendChild(card);
+                    
+                    window.game4Cards.push({
+                        element: card,
+                        symbol: symbol,
+                        index: index,
+                        flipped: false,
+                        matched: false
+                    });
+                    
+                    // Настраиваем обработчик клика
+                    card.addEventListener('click', () => handleCardClick(card, index));
+                });
+            }
+            
+            // Обработчик клика по карточке
+            function handleCardClick(cardElement, cardIndex) {
+                if (!window.game4Active) return;
+                
+                const card = window.game4Cards.find(c => c.index === cardIndex);
+                
+                // Проверяем, можно ли перевернуть карточку
+                if (card.flipped || card.matched || window.game4FlippedCards.length >= 2) {
+                    return;
+                }
+                
+                // Переворачиваем карточку
+                flipCard(card, true);
+                
+                // Добавляем в список перевернутых карточек
+                window.game4FlippedCards.push(card);
+                
+                // Если перевернуто две карточки, проверяем совпадение
+                if (window.game4FlippedCards.length === 2) {
+                    window.game4Moves++;
+                    movesElement.textContent = window.game4Moves;
+                    
+                    // Проверяем совпадение
+                    checkForMatch();
+                }
+            }
+            
+            // Переворот карточки
+            function flipCard(card, flip) {
+                card.flipped = flip;
+                
+                if (flip) {
+                    card.element.classList.add('flipped');
+                    
+                    // Воспроизводим звук переворота (если музыка включена)
+                    if (musicPlaying && audioContext) {
+                        playNote(392.00, 0.2); // Нота G4
+                    }
+                } else {
+                    card.element.classList.remove('flipped');
+                }
+            }
+            
+            // Проверка совпадения карточек
+            function checkForMatch() {
+                const [card1, card2] = window.game4FlippedCards;
+                
+                if (card1.symbol === card2.symbol) {
+                    // Совпадение найдено
+                    card1.matched = true;
+                    card2.matched = true;
+                    
+                    window.game4MatchedCards.push(card1, card2);
+                    window.game4Matches++;
+                    matchesElement.textContent = window.game4Matches;
+                    
+                    // Анимация совпадения
+                    card1.element.classList.add('matched', 'card-match');
+                    card2.element.classList.add('matched', 'card-match');
+                    
+                    // Воспроизводим звук совпадения (если музыка включена)
+                    if (musicPlaying && audioContext) {
+                        playNote(523.25, 0.5); // Нота C5
+                    }
+                    
+                    // Очищаем список перевернутых карточек
+                    window.game4FlippedCards = [];
+                    
+                    // Проверяем завершение игры
+                    checkGame4Completion();
+                    
+                    // Убираем анимацию
+                    setTimeout(() => {
+                        card1.element.classList.remove('card-match');
+                        card2.element.classList.remove('card-match');
+                    }, 600);
+                } else {
+                    // Несовпадение
+                    window.game4Attempts--;
+                    attemptsElement.textContent = window.game4Attempts;
+                    
+                    // Воспроизводим звук ошибки (если музыка включена)
+                    if (musicPlaying && audioContext) {
+                        playNote(261.63, 0.3); // Нота C4
+                    }
+                    
+                    // Переворачиваем карточки обратно через задержку
+                    setTimeout(() => {
+                        flipCard(card1, false);
+                        flipCard(card2, false);
+                        window.game4FlippedCards = [];
+                        
+                        // Проверяем, не закончились ли попытки
+                        if (window.game4Attempts <= 0) {
+                            endGame4(false);
+                        }
+                    }, 1000);
+                }
+            }
+            
+            // Проверка завершения игры
+            function checkGame4Completion() {
+                if (window.game4Matches === window.game4TotalPairs) {
+                    // Все пары найдены
+                    endGame4(true);
+                }
+            }
+            
+            // Начало игры
+            function startGame4() {
+                if (window.game4Active) return;
+                
+                window.game4Active = true;
+                window.game4Matches = 0;
+                window.game4Attempts = 7;
+                window.game4Moves = 0;
+                
+                // Создаем карточки
+                createCards();
+                
+                // Обновляем статистику
+                matchesElement.textContent = window.game4Matches;
+                attemptsElement.textContent = window.game4Attempts;
+                movesElement.textContent = window.game4Moves;
+                
+                // Настраиваем кнопки
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Игра идет...';
+                
+                // Скрываем инструкции и сообщения
+                instructions.style.display = 'none';
+                gameMessage.style.display = 'none';
+            }
+            
+            // Конец игры
+            function endGame4(isWin) {
+                window.game4Active = false;
+                
+                const messageTitle = document.getElementById('messageTitle4');
+                const messageText = document.getElementById('messageText4');
+                
+                if (isWin) {
+                    messageTitle.textContent = 'Поздравляем!';
+                    messageText.textContent = `Вы нашли все пары за ${window.game4Moves} ходов! Осталось попыток: ${window.game4Attempts}`;
+                } else {
+                    messageTitle.textContent = 'Игра окончена!';
+                    messageText.textContent = `Вы нашли ${window.game4Matches} из ${window.game4TotalPairs} пар. Попробуйте еще раз!`;
+                }
+                
+                gameMessage.style.display = 'block';
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-redo"></i> Начать заново';
+            }
+            
+            // Перезапуск игры
+            function restartGame4() {
+                gameMessage.style.display = 'none';
+                startGame4();
+            }
+            
+            // Показать/скрыть инструкции
+            function toggleInstructions4() {
+                instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+            }
+            
+            // Инициализация игры
+            function initGame4Internal() {
+                // Создаем начальное состояние
+                createCards();
+                
+                // Настраиваем обработчики событий
+                startBtn.addEventListener('click', startGame4);
+                instructionsBtn.addEventListener('click', toggleInstructions4);
+                restartBtn.addEventListener('click', restartGame4);
+                
+                instructions.style.display = 'none';
+            }
+            
+            initGame4Internal();
+        }
+        
+        // Общая функция создания снежинок
+        function createSnowflakes(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            const snowflakeCount = isMobile ? 25 : 40;
+            
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                
+                const size = Math.random() * 5 + 2;
+                const posX = Math.random() * 100;
+                const delay = Math.random() * 5;
+                const duration = Math.random() * 10 + 8;
+                
+                snowflake.style.width = `${size}px`;
+                snowflake.style.height = `${size}px`;
+                snowflake.style.left = `${posX}%`;
+                snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+                snowflake.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+                
+                container.appendChild(snowflake);
+            }
+        }
+        
+        // Обработка изменения размера окна
+        window.addEventListener('resize', () => {
+            createSnowflakes('snowflakes1');
+            createSnowflakes('snowflakes2');
+        });
+    </script>
+</body>
+</html>
